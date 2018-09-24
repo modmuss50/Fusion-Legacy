@@ -1,6 +1,6 @@
 group 'me.modmuss50'
 
-version '0.0.1'
+version '0.0.3'
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {

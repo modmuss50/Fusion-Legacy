@@ -20,7 +20,7 @@ import java.util.List;
  */
 public class MixinTransformer implements IClassTransformer {
 
-    public static ClassPool cp = new ClassPool(true);
+    public static ClassPool cp = new FusionClassPool();
 
     public byte[] transform(String name, byte[] basicClass) {
         if (MixinManager.mixinTargetMap.containsKey(name)) {
@@ -143,7 +143,7 @@ public class MixinTransformer implements IClassTransformer {
                             try {
                                 //Removes the existing method if it exists
                                 String desc = Descriptor.ofMethod(generatedMethod.getReturnType(), generatedMethod.getParameterTypes());
-                                CtMethod existingMethod = target.getMethod(method.getName(), desc);
+                                CtMethod existingMethod = target.getMethod(methodName, desc);
                                 if (existingMethod != null) {
                                     target.removeMethod(existingMethod);
                                 }
