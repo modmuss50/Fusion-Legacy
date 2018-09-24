@@ -1,0 +1,87 @@
+group 'me.modmuss50'
+
+version '0.0.1'
+
+def ENV = System.getenv()
+if (ENV.BUILD_NUMBER) {
+	version = version + "." + "${System.getenv().BUILD_NUMBER}"
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name = 'mojang'
+        url = 'https://libraries.minecraft.net/'
+    }
+    maven {
+        name = 'Fabric'
+        url = 'http://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'Modmuss'
+        url = 'http://maven.modmuss50.me/'
+    }
+	maven {
+		name = 'Forge'
+		url = 'http://files.minecraftforge.net/maven/'
+	}
+}
+
+dependencies {
+    compile 'org.javassist:javassist:3.23.1-GA'
+	compile ('net.minecraft:launchwrapper:1.12') {
+        transitive = false
+    }
+	compile 'org.apache.commons:commons-lang3:3.8.1'
+	compile 'org.ow2.asm:asm-debug-all:5.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.11.1'
+	compile 'org.apache.logging.log4j:log4j-api:2.11.1'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+publishing {
+	publications {
+		maven(MavenPublication) {
+			groupId project.group
+			artifactId project.archivesBaseName
+			version project.version
+
+			from components.java
+
+			artifact sourcesJar {
+				classifier "sources"
+			}
+
+			//Removes all the deps from the pom as I assume the target env allready has them
+			pom.withXml {
+				asNode().remove(asNode().get('dependencies'))
+			}
+		}
+	}
+	repositories {
+		maven {
+			url "http://mavenupload.modmuss50.me/"
+			if (project.hasProperty('mavenPass')) {
+				credentials {
+					username 'buildslave'
+					password project.getProperty('mavenPass')
+				}
+			}
+		}
+	}
+}
