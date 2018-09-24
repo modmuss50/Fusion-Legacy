@@ -23,6 +23,7 @@ public class MixinTransformer implements IClassTransformer {
     public static ClassPool cp = new ClassPool(true);
 
     public byte[] transform(String name, byte[] basicClass) {
+        System.out.println(name);
         if (MixinManager.mixinTargetMap.containsKey(name)) {
             //This should not happen, just stop it from doing it anyway.
             if (MixinManager.transformedClasses.contains(name)) {
@@ -214,7 +215,7 @@ public class MixinTransformer implements IClassTransformer {
 
     @Override
     public byte[] transform(String name, String transformedName, byte[] bytes) {
-        return transform(name, bytes);
+        return transform(transformedName, bytes);
     }
 
     public static ClassNode readClassFromBytes(byte[] bytes) {
